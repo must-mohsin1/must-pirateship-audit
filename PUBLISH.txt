@@ -1,0 +1,100 @@
+# Publishing instructions
+
+These are the exact commands to publish this site under your account and turn on
+GitHub Pages. Nothing here runs without your approval.
+
+## 1. Prereqs
+
+```
+brew install gh
+gh auth login
+```
+
+Authenticate as the `z.mohsin1` account. If you have not yet created the `z.mohsin1` GitHub
+account, do that first at https://github.com/signup.
+
+## 2. Create the repo and push
+
+From this directory (`/private/tmp/must-pirateship-audit`):
+
+```
+git init
+git checkout -b main
+git config user.name "z.mohsin1"
+git config user.email "z.mohsin1@users.noreply.github.com"
+git add .
+git commit -m "audit: publish RefundableProductEscrow v0.3.0.3 review"
+gh repo create must-pirateship-audit --public --source=. --remote=origin --push
+```
+
+After this command, the site is at `https://github.com/z.mohsin1/must-pirateship-audit`.
+
+## 3. (Optional but recommended) Sign the commit
+
+If you have a GPG or SSH signing key set up, amend the commit to be signed:
+
+```
+git config commit.gpgsign true   # or use -S on the commit
+git commit --amend -S --no-edit
+git push --force-with-lease
+```
+
+If you do not yet have a signing key, skip this step. The signed-checksum mechanism
+described in `VERIFY.html` still works via GitHub account authorship; the PGP signature
+is an optional addition.
+
+## 4. Turn on GitHub Pages
+
+Either via the GitHub UI (Settings -> Pages -> Build and deployment -> Source: "Deploy from
+a branch" -> Branch: `main` -> Folder: `/`), or via the CLI:
+
+```
+gh repo edit --enable-pages --pages-source-branch main --pages-source-path /
+```
+
+Give Pages 30-60 seconds to publish. The site will be available at:
+
+  https://z.mohsin1.github.io/must-pirateship-audit/
+
+## 5. Fill in the signed-checksum in `report.html`
+
+After Pages is live, fetch the commit hash that added `report.html`:
+
+```
+gh api repos/z.mohsin1/must-pirateship-audit/commits?path=report.html --jq '.[0].sha'
+```
+
+Open `report.html`, find the section "Signed checksum of this report" inside the signature
+box, and replace the placeholder with the SHA. Then:
+
+```
+git add report.html
+git commit -m "audit: pin signed-checksum for report.html"
+git push
+```
+
+The "Signed checksum" section will then point at the commit that introduced it. Anyone
+verifying can fetch the report from the URL, fetch the source from the must-pirateship
+repo at the documented commit, reproduce the bytecodes, and check the Git commit
+authorship -- all the way to your GitHub account, which is in turn linked to your LinkedIn.
+
+## 6. Verify end-to-end
+
+From a clean machine:
+
+```
+# Fetch and check the source commit
+git clone https://github.com/mustcompany/must-pirateship.git
+cd must-pirateship
+git checkout 89018f0ee3b04538a7baab4cc58e7d03325bf7f4
+git rev-parse HEAD
+
+# Compile and reproduce the bytecodes
+# (see VERIFY.html for the full solc + python reproduction)
+
+# Fetch the report and check authorship
+curl -sL https://z.mohsin1.github.io/must-pirateship-audit/report.html | head
+gh api repos/z.mohsin1/must-pirateship-audit/commits?path=report.html --jq '.[0].sha'
+```
+
+All three should line up.

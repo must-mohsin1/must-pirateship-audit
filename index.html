@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RefundableProductEscrow v0.3.0.3 — Audit</title>
+<meta name="description" content="Independent audit of mustcompany/must-pirateship@89018f0 — RefundableProductEscrow.sol on Polygon PoS.">
+<style>
+  :root{ --fg:#111; --muted:#5a5a5a; --bg:#fff; --rule:#e6e6e6; --accent:#0b5fb3; --ok:#1e7a3a; --code-bg:#f5f5f5; }
+  @media (prefers-color-scheme: dark){ :root{ --fg:#ececec; --muted:#9aa0a6; --bg:#0e0e10; --rule:#2a2a2a; --accent:#7eb6ff; --ok:#7ed8a0; --code-bg:#161618; } }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:780px;margin:0 auto;padding:48px 24px 80px}
+  h1{font-size:30px;margin:0 0 6px;line-height:1.2}
+  .sub{color:var(--muted);font-size:15px;margin-bottom:32px}
+  .tag{display:inline-block;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;margin-right:6px}
+  .verdict{display:flex;gap:16px;align-items:center;border:1px solid var(--rule);border-left:4px solid var(--ok);background:var(--code-bg);padding:16px;border-radius:4px;margin:24px 0}
+  .verdict .badge{background:var(--ok);color:#fff;padding:4px 10px;border-radius:3px;font-size:14px;font-weight:700;letter-spacing:.06em}
+  .verdict .who{font-size:14px;color:var(--muted)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:24px 0}
+  .card{border:1px solid var(--rule);border-radius:6px;padding:14px;background:var(--code-bg)}
+  .card a{text-decoration:none;color:var(--fg);font-weight:600}
+  .card .meta{font-size:12px;color:var(--muted);margin-top:4px}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--rule);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:var(--code-bg);font-weight:600}
+  code,pre,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
+  code{background:var(--code-bg);padding:1px 5px;border-radius:3px}
+  a{color:var(--accent)}
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--rule);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>RefundableProductEscrow v0.3.0.3</h1>
+<div class="sub">
+  <span class="tag">Polygon PoS</span>
+  <span class="tag">Solidity 0.8.30</span>
+  &nbsp; Independent audit, commit <code>89018f0</code> &middot; <a href="https://github.com/mustcompany/must-pirateship/tree/89018f0ee3b04538a7baab4cc58e7d03325bf7f4">mustcompany/must-pirateship@89018f0</a>
+</div>
+
+<div class="verdict">
+  <span class="badge">APPROVE</span>
+  <div>
+    <div style="font-size:18px;font-weight:700">For deployment on Polygon PoS mainnet</div>
+    <div class="who">Reviewed by Mohsin Zahid &middot; <a href="https://www.linkedin.com/in/mohsin-zahid-dev/">linkedin.com/in/mohsin-zahid-dev</a> &middot; 21 July 2026</div>
+  </div>
+</div>
+
+<p>This is the public report for an independent review of <code>contracts/RefundableProductEscrow.sol</code> at commit <code>89018f0ee3b04538a7baab4cc58e7d03325bf7f4</code> in <a href="https://github.com/mustcompany/must-pirateship">mustcompany/must-pirateship</a>. The contract is a 30-day native-POL escrow for a refundable product pre-order.</p>
+
+<div class="cards">
+  <div class="card">
+    <a href="report.html">Full report</a>
+    <div class="meta">Scope, path analysis, findings, verdict, signed-checksum section.</div>
+  </div>
+  <div class="card">
+    <a href="VERIFY.html">Verification procedure</a>
+    <div class="meta">Reproduce the bytecodes, fingerprints, initcode, and authorship.</div>
+  </div>
+  <div class="card">
+    <a href="FINDINGS.md">FINDINGS.md</a>
+    <div class="meta">The raw technical dossier in markdown.</div>
+  </div>
+</div>
+
+<h2 style="font-size:18px;margin-top:32px">Fingerprints at a glance</h2>
+<table>
+  <thead><tr><th>Artifact</th><th>Size</th><th>SHA-256</th></tr></thead>
+  <tbody>
+    <tr><td>Creation bytecode</td><td>4992 B</td><td><code>9a2fdeedce6b4758e554a5c7a5e2978a8e74591ff5aedf93cbad1633d02b21ab</code></td></tr>
+    <tr><td>Deployed bytecode</td><td>4555 B</td><td><code>9b9706867bfde369562f64c1c1d5779b8102c2484da3fd520e05ddf6472687e2</code></td></tr>
+    <tr><td>Metadata</td><td>7637 B</td><td><code>b359e617193751c11ad8b29b2b9ba06cec9dd3fcdb868f183716d7960c66bb89</code></td></tr>
+    <tr><td>Initcode (creation + args)</td><td>5056 B</td><td><code>33a7aae97e9b7a982c75dc4598469ac4e3ed9bffc8d182f1c1467e65bec55478</code></td></tr>
+  </tbody>
+</table>
+
+<h2 style="font-size:18px;margin-top:32px">Deployment parameters (used to derive the initcode)</h2>
+<table>
+  <tbody>
+    <tr><td><code>beneficiary</code></td><td><code>0xcF9178cA7360066B25de9c142A4c155abf151D6f</code></td></tr>
+    <tr><td><code>minimumPledge</code></td><td><code>300000000000000000000</code> wei (300 &times; 10<sup>18</sup>)</td></tr>
+  </tbody>
+</table>
+
+<h2 style="font-size:18px;margin-top:32px">Findings summary</h2>
+<ul>
+  <li><strong>0</strong> high-severity issues</li>
+  <li><strong>3</strong> medium: M-1 (irrevocable approval, design), M-2 (no approval grace past deadline, design), M-3 (no sweep of deployer-attached value, operational)</li>
+  <li><strong>5</strong> low / informational (style, DX, clarity)</li>
+</ul>
+
+<footer>
+  <p>Source: <a href="https://github.com/mustcompany/must-pirateship">mustcompany/must-pirateship</a> at <a href="https://github.com/mustcompany/must-pirateship/tree/89018f0ee3b04538a7baab4cc58e7d03325bf7f4"><code>89018f0</code></a>. Published by Mohsin Zahid at <a href="https://z.mohsin1.github.io/must-pirateship-audit/">z.mohsin1.github.io/must-pirateship-audit</a>.</p>
+</footer>
+
+</div>
+</body>
+</html>

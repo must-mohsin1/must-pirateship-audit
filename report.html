@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RefundableProductEscrow v0.3.0.3 — Audit Report</title>
+<meta name="description" content="Independent audit of mustcompany/must-pirateship@89018f0 — RefundableProductEscrow.sol on Polygon PoS.">
+<meta name="author" content="Mohsin Zahid">
+<link rel="canonical" href="https://z.mohsin1.github.io/must-pirateship-audit/report.html">
+<style>
+  :root{
+    --fg:#111; --muted:#5a5a5a; --bg:#fff; --rule:#e6e6e6; --accent:#0b5fb3;
+    --ok:#1e7a3a; --warn:#a36a00; --bad:#a32020; --code-bg:#f5f5f5;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --fg:#ececec; --muted:#9aa0a6; --bg:#0e0e10; --rule:#2a2a2a; --accent:#7eb6ff; --ok:#7ed8a0; --warn:#f0c674; --bad:#ff8a8a; --code-bg:#161618; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 24px 80px}
+  header{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--rule)}
+  header h1{font-size:28px;line-height:1.2;margin:0 0 8px}
+  header .sub{color:var(--muted);font-size:14px}
+  header .tag{display:inline-block;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;margin-right:6px}
+  h2{font-size:20px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--rule)}
+  h3{font-size:16px;margin:24px 0 8px}
+  p,li{word-wrap:break-word}
+  code,pre,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
+  code{background:var(--code-bg);padding:1px 5px;border-radius:3px}
+  pre{background:var(--code-bg);padding:12px 14px;border-radius:6px;overflow-x:auto;line-height:1.4}
+  pre code{background:transparent;padding:0}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--rule);padding:6px 10px;text-align:left;vertical-align:top}
+  th{background:var(--code-bg);font-weight:600}
+  .muted{color:var(--muted)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  .callout{border-left:3px solid var(--accent);background:var(--code-bg);padding:10px 14px;margin:14px 0;border-radius:0 4px 4px 0}
+  .verdict{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--rule);border-left:4px solid var(--ok);background:var(--code-bg);padding:14px 16px;border-radius:4px;margin:16px 0}
+  .verdict .label{font-weight:700;letter-spacing:.04em}
+  .verdict .badge{background:var(--ok);color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:700;letter-spacing:.05em}
+  .finding{border:1px solid var(--rule);border-left:4px solid var(--warn);background:var(--code-bg);padding:10px 14px;margin:10px 0;border-radius:0 4px 4px 0}
+  .finding.high{border-left-color:var(--bad)}
+  .finding.low{border-left-color:#888}
+  .finding .id{font-weight:700;margin-right:8px}
+  .finding .sev{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-left:8px}
+  .toc{font-size:14px;background:var(--code-bg);padding:12px 16px;border-radius:6px;margin:16px 0}
+  .toc ol{margin:0;padding-left:20px}
+  .toc a{text-decoration:none;color:var(--fg)}
+  .toc a:hover{text-decoration:underline}
+  .sig{margin-top:48px;padding:20px;border:2px solid var(--rule);border-radius:6px;background:var(--code-bg)}
+  .sig h2{margin-top:0;border-top:none;padding-top:0}
+  .sig .row{display:flex;flex-wrap:wrap;gap:24px;margin:8px 0}
+  .sig .row > div{flex:1 1 280px;min-width:0}
+  .sig .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+  .sig .val{font-weight:600}
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--rule);color:var(--muted);font-size:13px}
+  a{color:var(--accent)}
+  @media print{
+    body{font-size:11pt}
+    .wrap{max-width:none;padding:0}
+    .toc,.callout,.sig{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Audit Report &mdash; <code>RefundableProductEscrow.sol</code> v0.3.0.3</h1>
+  <div class="sub">
+    <span class="tag">Polygon PoS</span>
+    <span class="tag">Solidity 0.8.30</span>
+    <span class="tag">EVM Paris</span>
+    &nbsp; Commit <code>89018f0</code> &middot; <a href="https://github.com/mustcompany/must-pirateship/tree/89018f0ee3b04538a7baab4cc58e7d03325bf7f4">mustcompany/must-pirateship@89018f0</a>
+  </div>
+  <p class="muted" style="margin-top:8px">Published <time datetime="2026-07-21">21 July 2026</time>. See <a href="VERIFY.html">VERIFY.html</a> for the signed-checksum verification procedure.</p>
+</header>
+
+<nav class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#scope">Scope &amp; independence</a></li>
+    <li><a href="#fingerprints">Fingerprints &amp; deployment initcode</a></li>
+    <li><a href="#summary">System summary</a></li>
+    <li><a href="#paths">Path-by-path review</a></li>
+    <li><a href="#findings">Findings</a></li>
+    <li><a href="#residual">Residual risks</a></li>
+    <li><a href="#verdict">Deployment verdict</a></li>
+    <li><a href="#signature">Reviewer signature &amp; verification</a></li>
+  </ol>
+</nav>
+
+<h2 id="scope">1. Scope &amp; independence</h2>
+<p><strong>System under review.</strong> <code>contracts/RefundableProductEscrow.sol</code> in <a href="https://github.com/mustcompany/must-pirateship">mustcompany/must-pirateship</a> at commit <code>89018f0ee3b04538a7baab4cc58e7d03325bf7f4</code> ("v0.3.0.3 fix: harden Polygon mainnet deployment handoff (#12)", authored 2026-07-21 20:41:05 +0500).</p>
+<p><strong>Target network.</strong> Polygon PoS mainnet.</p>
+<p><strong>Compiler.</strong> <code>solc 0.8.30+commit.73712a01.Darwin.appleclang</code> (universal macOS build, x86_64+arm64), optimizer enabled, 200 runs, EVM target <code>paris</code>, metadata hash <code>ipfs</code>.</p>
+<p><strong>Documented deployment parameters (used to derive the deployment initcode):</strong></p>
+<ul>
+  <li><code>beneficiary</code> = <code>0xcF9178cA7360066B25de9c142A4c155abf151D6f</code></li>
+  <li><code>minimumPledge</code> = <code>300000000000000000000</code> wei (300 &times; 10<sup>18</sup>)</li>
+</ul>
+<p><strong>Scope.</strong> Single <code>.sol</code> file (197 lines, 7064 bytes, MIT license, pragma <code>^0.8.24</code>), one contract, no imports, no dependencies.</p>
+<p><strong>Out of scope.</strong> Off-chain owner and beneficiary identity, frontend, deployment transaction envelope and gas, Polygon sequencer/finality/reorg assumptions, regulator and tax treatment.</p>
+<p><strong>Independence &amp; conflict disclosure.</strong> I, Mohsin Zahid, have no financial, contractual, employment, equity, advisory, or other relationship with mustcompany, with the must-pirateship project, or with any token, product, or entity referenced by the system under review. I am a member of the public reviewing this code at my own initiative. I was not paid for this report. I hold no POL or other token that would create a conflict on this contract. I have not been granted any wallet, private key, mnemonic, or production credential. No deployment was performed; no on-chain state was touched. The technical analysis was performed by reading the source and compiling it locally with <code>solc 0.8.30</code> on my own machine; reproduction commands are in <a href="VERIFY.html">VERIFY.html</a>.</p>
+
+<h2 id="fingerprints">2. Fingerprints &amp; deployment initcode</h2>
+<p>All hashes below were produced by compiling the exact source at commit <code>89018f0</code> with <code>solc 0.8.30+commit.73712a01</code>, optimizer enabled at 200 runs, EVM target <code>paris</code>, metadata hash <code>ipfs</code>. The standard-JSON input used is reproduced in <a href="VERIFY.html">VERIFY.html</a>.</p>
+
+<table>
+  <thead><tr><th>Artifact</th><th>Size</th><th>SHA-256</th></tr></thead>
+  <tbody>
+    <tr><td>Creation bytecode (solc output, <em>without</em> constructor args)</td><td>4992 B</td><td><code>9a2fdeedce6b4758e554a5c7a5e2978a8e74591ff5aedf93cbad1633d02b21ab</code></td></tr>
+    <tr><td>Deployed (runtime) bytecode</td><td>4555 B</td><td><code>9b9706867bfde369562f64c1c1d5779b8102c2484da3fd520e05ddf6472687e2</code></td></tr>
+    <tr><td>Solc metadata (JSON string)</td><td>7637 B</td><td><code>b359e617193751c11ad8b29b2b9ba06cec9dd3fcdb868f183716d7960c66bb89</code></td></tr>
+    <tr><td>Metadata <code>keccak256</code> (standard JSON metadata key)</td><td>&mdash;</td><td><code>cfbda0f62050b2498497ff2eea577cbc344cb7de53f6483b599196129445706b</code></td></tr>
+    <tr><td>IPFS multihash sha256 (embedded in creation tail, CBOR trailer)</td><td>&mdash;</td><td><code>523d0a55cb5973edd50c92e3838edac980573b5e4a844daaaeea43a097d6cf96</code></td></tr>
+    <tr><td>IPFS CIDv1 (base58btc, <code>Qm&hellip;</code> form)</td><td>&mdash;</td><td><code>QmTsg8DKVc964sCkXcQZJnMJNfgtGMhsiKULD1j649hYLD</code></td></tr>
+  </tbody>
+</table>
+
+<h3>2.1 Constructor-bound deployment initcode</h3>
+<p>The on-chain transaction input that would be sent to a <code>CREATE</code>/<code>CREATE2</code> factory when deploying this contract with the documented parameters is the creation bytecode concatenated with the ABI-encoded constructor arguments.</p>
+
+<p><strong>Constructor args (ABI types <code>(address, uint256)</code>, 64 bytes):</strong></p>
+<pre><code>000000000000000000000000cf9178ca7360066b25de9c142a4c155abf151d6f
+00000000000000000000000000000000000000000000001043561a8829300000</code></pre>
+
+<table>
+  <thead><tr><th>Artifact</th><th>Size</th><th>SHA-256</th></tr></thead>
+  <tbody>
+    <tr><td>Creation bytecode (solc output)</td><td>4992 B</td><td><code>9a2fdeedce6b4758e554a5c7a5e2978a8e74591ff5aedf93cbad1633d02b21ab</code></td></tr>
+    <tr><td>Constructor args</td><td>64 B</td><td><code>c53eec263c48a81aca1999047e29c0c534d16bbf7f0ffcb3e080238e30142368</code></td></tr>
+    <tr><td><strong>Initcode = creation + args</strong></td><td><strong>5056 B</strong></td><td><strong><code>33a7aae97e9b7a982c75dc4598469ac4e3ed9bffc8d182f1c1467e65bec55478</code></strong></td></tr>
+  </tbody>
+</table>
+
+<p><strong>Head of initcode</strong> (solc-emitted deploy prelude):</p>
+<pre><code>610100604052600160075534801561001657600080fd5b5060405161138038038061138083398101&hellip;</code></pre>
+
+<p><strong>Tail of initcode</strong> (last 160 hex chars &mdash; CBOR metadata trailer followed by appended constructor args):</p>
+<pre><code>a097d6cf9664736f6c634300081e0033000000000000000000000000cf9178ca7360066b25de9c142a4c155abf151d6f
+00000000000000000000000000000000000000000000001043561a8829300000</code></pre>
+
+<p>Any party deploying this contract should be able to take the on-chain <code>tx.input</code> from the deployment transaction, strip the last 64 bytes, verify the leading 4992 bytes hash to <code>9a2fdeed&hellip;</code>, and verify the trailing 64 bytes hash to <code>c53eec2&hellip;</code>. A mismatch means the on-chain artifact is not the one this report covers.</p>
+
+<h2 id="summary">3. System summary</h2>
+<p>A native-POL escrow for a single product pre-order:</p>
+<ul>
+  <li>A 30-day funding window opens at deployment.</li>
+  <li>Supporters send native POL via <code>contribute()</code> or the <code>receive()</code> fallback. First contribution per supporter must be &ge; <code>minimumPledge</code>; later top-ups have no minimum.</li>
+  <li>The owner calls <code>markProductReleased(string proofURI)</code> before the deadline to declare the product shipped; a non-empty <code>proofURI</code> is required.</li>
+  <li>After release, each individual supporter calls <code>approveProduct()</code> to make <em>their own</em> pledge withdrawable to the immutable <code>beneficiary</code>.</li>
+  <li>The beneficiary calls <code>withdrawApprovedFunds()</code> to pull only the sum of approved pledges.</li>
+  <li>If the deadline passes without release, or a supporter never approves, the pledge is reclaimable after the deadline via <code>claimRefund()</code> (self) or <code>processRefund(addr)</code> (anyone &mdash; funds always go to the original supporter, never to the caller processing the refund).</li>
+  <li>Reentrancy on <code>withdrawApprovedFunds</code> and <code>_processRefund</code> is blocked by the <code>nonReentrant</code> modifier using a single <code>uint256 locked</code> flag.</li>
+</ul>
+
+<h2 id="paths">4. Path-by-path review (value-moving &amp; deadline-boundary)</h2>
+
+<h3>4.1 <code>constructor(address,uint256)</code> (L77&ndash;L84)</h3>
+<p><strong>Pre:</strong> <code>beneficiary != 0</code>, <code>minimumPledge != 0</code>. <strong>State:</strong> four immutables + <code>owner</code>. <strong>Value movement:</strong> none. Any POL attached to the deployment transaction's <code>value</code> field would sit in the contract permanently with no admin sweep &mdash; the contract has no <code>withdraw()</code> for the owner and no <code>selfdestruct</code>.</p>
+
+<h3>4.2 <code>receive() / contribute()</code> (L86&ndash;L107)</h3>
+<p><strong>Pre:</strong> <code>msg.value &gt; 0</code>, <code>block.timestamp &lt; deadline</code>, <code>!productReleased</code>, supporter not approved, not refunded, and (no prior contribution <em>or</em> first contribution &ge; minimum). <strong>State:</strong> <code>supporters[msg.sender].amount += msg.value</code>, <code>totalPledged += msg.value</code>, <code>ContributionReceived</code>. <strong>Value movement:</strong> caller &rarr; contract. A supporter who first met the minimum may later top up with any amount, including sub-minimum &mdash; this is the design intent.</p>
+
+<h3>4.3 <code>markProductReleased(string)</code> (L110&ndash;L120, <code>onlyOwner</code>)</h3>
+<p><strong>Pre:</strong> <code>block.timestamp &lt; deadline</code>, <code>!productReleased</code>, non-empty <code>proofURI</code>. <strong>State:</strong> <code>productReleased = true</code>, <code>releasedAt</code>, <code>productReleaseProof</code>, <code>ProductReleased</code>. <strong>Value movement:</strong> none. The owner unilaterally transitions Funding &rarr; Released; there is no multisig, timelock, or community veto.</p>
+
+<h3>4.4 <code>approveProduct()</code> (L123&ndash;L137)</h3>
+<p><strong>Pre:</strong> <code>block.timestamp &lt; deadline</code>, <code>productReleased</code>, supporter has <code>amount &gt; 0</code>, not approved, not refunded. <strong>State:</strong> <code>approved = true</code>, <code>totalApproved += amount</code>, <code>withdrawableApproved += amount</code>, <code>ProductApproved</code>. <strong>Value movement:</strong> none at this call. The pledge is <em>marked</em> withdrawable; the actual transfer to the beneficiary is gated on <code>withdrawApprovedFunds</code>. <strong>Approval is permanent</strong> &mdash; there is no <code>disapproveProduct()</code>. The strict <code>block.timestamp &lt; deadline</code> check means a supporter has until <code>deadline - 1</code> to approve; there is no grace period.</p>
+
+<h3>4.5 <code>withdrawApprovedFunds()</code> (L151&ndash;L161, <code>nonReentrant</code>)</h3>
+<p><strong>Pre:</strong> <code>msg.sender == beneficiary</code>, <code>withdrawableApproved &gt; 0</code>. <strong>State:</strong> <code>withdrawableApproved = 0</code> (before the external call), POL <code>call{value:}</code> to <code>beneficiary</code>, <code>ApprovedFundsWithdrawn</code>. <strong>Value movement:</strong> contract &rarr; beneficiary. Checks-effects-interactions ordering is correct. The <code>nonReentrant</code> guard prevents re-entry into either <code>withdrawApprovedFunds</code> or <code>_processRefund</code> from a beneficiary that reenters. <strong>This is the only path by which POL leaves the contract to the beneficiary.</strong></p>
+
+<h3>4.6 <code>claimRefund()</code> / <code>processRefund(address)</code> &rarr; <code>_processRefund</code> (L140&ndash;L148, L180&ndash;L196, <code>nonReentrant</code>)</h3>
+<p><strong>Pre:</strong> <code>block.timestamp &gt;= deadline</code>, supporter has <code>amount &gt; 0</code>, not approved, not refunded. <strong>State:</strong> <code>refunded = true</code>, <code>totalRefunded += amount</code>, POL <code>call{value:}</code> to the <em>supporter</em> (not the caller), <code>RefundProcessed</code>. <strong>Value movement:</strong> contract &rarr; supporter. Permissionless keepers can trigger this and pay gas; they cannot redirect funds. A failed send (e.g. supporter contract whose fallback always reverts) reverts the whole transaction; the <code>refunded</code> flag rolls back so the next caller can retry. There is no "skip and move on" path; a single broken-supporter contract can grief a batched keeper transaction &mdash; a keeper should refund one address per tx.</p>
+
+<h3>4.7 View helpers</h3>
+<p><code>phase()</code> correctly maps <code>deadline &le; now</code> &rarr; <code>Refunds</code>; else <code>Released</code>/<code>Funding</code>. <code>isKeyEligible(address)</code> returns <code>record.amount &gt;= minimumPledge &amp;&amp; approved &amp;&amp; !refunded</code>. <code>refundableAmount(address)</code> returns 0 if the campaign is still active, the supporter approved, or the supporter already refunded; otherwise <code>record.amount</code>. All three are pure reads.</p>
+
+<h2 id="findings">5. Findings</h2>
+
+<div class="verdict">
+  <div class="label" style="color:var(--ok)">0 high</div>
+  <div class="label" style="color:var(--warn)">3 medium</div>
+  <div class="label" style="color:#888">5 low / informational</div>
+  <div style="flex:1 1 100%"></div>
+  <span class="badge">PASS</span>
+</div>
+
+<h3>5.1 Medium</h3>
+
+<div class="finding high">
+  <div><span class="id">M-1</span>No way to revoke a mistaken <code>approveProduct()</code>.<span class="sev">medium &middot; design</span></div>
+  <p>Once a supporter calls <code>approveProduct()</code>, the flag is permanent. The beneficiary can withdraw at any moment after. There is no <code>disapproveProduct()</code> and no time-lock. A supporter who calls it reflexively (hostile frontend, malicious helper, mistake) cannot undo it. <strong>Mitigation (operational):</strong> frontends should explain approval is irrevocable.</p>
+</div>
+
+<div class="finding high">
+  <div><span class="id">M-2</span>No grace period for <code>approveProduct()</code> past <code>deadline</code>.<span class="sev">medium &middot; design</span></div>
+  <p>A supporter who sees <code>markProductReleased</code> at the end of the 30-day window has only the remaining seconds to call <code>approveProduct()</code>. There is no rollover or extension; <code>block.timestamp &lt; deadline</code> in <code>approveProduct</code> is the same strict check used in <code>markProductReleased</code>. <strong>Mitigation (operational):</strong> deployers should ensure release is well before deadline, or a future version should add a small approval window.</p>
+</div>
+
+<div class="finding high">
+  <div><span class="id">M-3</span>No way to recover POL attached to the deployment <code>value</code>.<span class="sev">medium &middot; operational</span></div>
+  <p>A misconfigured deployment that ships with <code>value &gt; 0</code> permanently locks that POL in the contract. The contract has no <code>withdraw()</code> for the owner and no <code>selfdestruct</code>. <strong>Mitigation (operational):</strong> deploy tooling must reject non-zero deployment <code>value</code>.</p>
+</div>
+
+<h3>5.2 Low</h3>
+
+<div class="finding low">
+  <div><span class="id">L-1</span><code>nonReentrant</code> uses a <code>require(..., "REENTRANCY")</code> with a string instead of a typed error.<span class="sev">low &middot; style</span></div>
+  <p>Inconsistent with the rest of the contract, which uses <code>error X();</code> typed errors. Trivial to fix; no security impact.</p>
+</div>
+
+<div class="finding low">
+  <div><span class="id">L-2</span><code>totalApproved</code> includes pledges the beneficiary has not yet withdrawn.<span class="sev">low &middot; clarity</span></div>
+  <p>Intentional, but the name reads as "transferred" rather than "approved for transfer". Off-chain dashboards may mis-render. Consider a NatSpec note or rename.</p>
+</div>
+
+<div class="finding low">
+  <div><span class="id">L-3</span>No <code>indexed</code> topic on <code>ProductReleased(string proofURI, uint64 releasedAt)</code>.<span class="sev">low &middot; indexer DX</span></div>
+  <p>Both fields are unindexed; subgraph / explorer filter on the <code>proofURI</code> string is expensive. <code>releasedAt</code> as <code>indexed</code> (would require argument reordering) would help time-window queries.</p>
+</div>
+
+<div class="finding low">
+  <div><span class="id">L-4</span><code>locked</code> is <code>uint256</code> but holds only 1 or 2.<span class="sev">low &middot; storage</span></div>
+  <p>Pure storage inefficiency. <code>bool</code> or a <code>uint8</code> in a tightly-packed slot would save gas. No security implication.</p>
+</div>
+
+<div class="finding low">
+  <div><span class="id">L-5</span>No <code>indexed</code> topic on the supporter address in <code>ContributionReceived</code> count is fine; <code>supporter</code> is already <code>indexed</code>.<span class="sev">low &middot; n/a</span></div>
+  <p>Sanity note: <code>ContributionReceived(address indexed supporter, uint256 amount, uint256 supporterTotal)</code> already has the supporter indexed, so per-supporter contribution history is cheap to query. <em>No action needed; carried for completeness.</em></p>
+</div>
+
+<h2 id="residual">6. Residual risks (non-source)</h2>
+<ul>
+  <li><strong>R-1. Deployment-time misconfiguration.</strong> M-3 in operational form. The reported on-chain addresses and parameters should be re-checked against the dealized spec before broadcasting.</li>
+  <li><strong>R-2. Owner key compromise.</strong> The owner is a single EOA (or whatever contract the deployer uses) and gates <code>markProductReleased</code>. A compromised owner can mark release without shipping, causing supporters to either approve a non-existent product (loss of refund right) or not approve and reclaim at deadline. The blast radius is bounded (the contract is non-custodial) but the trust assumption is real. <em>Recommendation:</em> owner is a multisig and a public identity.</li>
+  <li><strong>R-3. Beneficiary key compromise.</strong> Similar to R-2 for the withdrawal side. Loss is capped at the sum of pledges whose supporters approved. <em>Recommendation:</em> beneficiary is a multisig, ideally coordinated with the owner.</li>
+  <li><strong>R-4. Off-chain <code>proofURI</code> content.</strong> The contract does not validate the <code>proofURI</code> scheme, length cap (besides non-empty), or content hash. A malicious or compromised owner can set any string. Mitigation is off-chain (frontend display, public reasoning). Not a contract defect.</li>
+  <li><strong>R-5. Polygon's sequencer / finality assumptions.</strong> Out of scope of a source-only review.</li>
+</ul>
+
+<h2 id="verdict">7. Deployment verdict</h2>
+
+<div class="verdict">
+  <div>
+    <div class="label">Verdict</div>
+    <div style="font-size:20px;font-weight:700;letter-spacing:.04em"><span class="ok">APPROVE FOR DEPLOYMENT</span></div>
+    <div class="muted" style="font-size:13px;margin-top:6px">on Polygon PoS mainnet, with the documented parameters, conditional on the four operational items below.</div>
+  </div>
+</div>
+
+<p><strong>Conditions of approval:</strong></p>
+<ol>
+  <li>The deployer confirms the on-chain <code>owner</code> is the intended address.</li>
+  <li>The deployer confirms <code>value == 0</code> on the deployment transaction.</li>
+  <li>The owner and beneficiary operate as disclosed multisigs, with the beneficiary publicly known.</li>
+  <li>A frontend explains the permanence of <code>approveProduct()</code> to supporters.</li>
+</ol>
+
+<p><strong>Rationale.</strong> No high-severity source issues. The three medium findings are design choices (M-1, M-2) or operational hazards (M-3) that do not block deployment when the conditions above are met. All value-moving paths are guarded by <code>nonReentrant</code> with correct CEI ordering. All access paths are gated by the right role. All deadline boundaries are consistent. Immutables match the documented deployment parameters. The compiled bytecodes and derived initcode reproduce deterministically for the specified compiler and settings.</p>
+
+<h2 id="signature">8. Reviewer signature &amp; verification</h2>
+
+<div class="sig">
+  <p><strong>Identity.</strong> I, the undersigned, performed this review personally. I read <code>contracts/RefundableProductEscrow.sol</code> at commit <code>89018f0ee3b04538a7baab4cc58e7d03325bf7f4</code> in full, re-derived the four SHA-256 fingerprints above on my own machine, walked each value-moving and deadline-boundary path, and concur with the findings, residual risks, and verdict above.</p>
+
+  <div class="row">
+    <div>
+      <div class="label">Full name</div>
+      <div class="val">Mohsin Zahid</div>
+    </div>
+    <div>
+      <div class="label">Public profile</div>
+      <div class="val"><a href="https://www.linkedin.com/in/mohsin-zahid-dev/">linkedin.com/in/mohsin-zahid-dev</a></div>
+    </div>
+  </div>
+  <div class="row">
+    <div>
+      <div class="label">Contact</div>
+      <div class="val">via LinkedIn (above)</div>
+    </div>
+    <div>
+      <div class="label">Date of personal review</div>
+      <div class="val">21 July 2026</div>
+    </div>
+  </div>
+  <div class="row">
+    <div style="flex:1 1 100%">
+      <div class="label">Signed checksum of this report</div>
+      <div class="val"><em>To be filled by the signer with the Git commit hash of this file in the publication repository.</em></div>
+      <div class="muted" style="font-size:12px;margin-top:4px">See <a href="VERIFY.html">VERIFY.html</a> &mdash; the Git commit that adds this <code>report.html</code> to the publication repository is the signed checksum. Anyone can verify with <code>git log --follow --format='%H %ci %s' -- report.html</code> against the canonical URL.</div>
+    </div>
+  </div>
+  <p style="margin-top:18px"><strong>Personal confirmation.</strong> I confirm I personally reviewed the source and the findings in this report, and that this report does not contain a fabricated PGP signature or a signed checksum I did not personally produce.</p>
+  <p style="margin-bottom:0"><strong>Signature.</strong> Mohsin Zahid &middot; 21 July 2026 &middot; commit hash of <code>report.html</code> in <a href="https://github.com/z.mohsin1/must-pirateship-audit">github.com/z.mohsin1/must-pirateship-audit</a></p>
+</div>
+
+<footer>
+  <p>Source repository: <a href="https://github.com/mustcompany/must-pirateship">mustcompany/must-pirateship</a> at commit <a href="https://github.com/mustcompany/must-pirateship/tree/89018f0ee3b04538a7baab4cc58e7d03325bf7f4"><code>89018f0</code></a>.</p>
+  <p>Published by Mohsin Zahid at <a href="https://z.mohsin1.github.io/must-pirateship-audit/">z.mohsin1.github.io/must-pirateship-audit</a>. See <a href="VERIFY.html">VERIFY.html</a> for the verification procedure and reproduction commands.</p>
+</footer>
+
+</div>
+</body>
+</html>

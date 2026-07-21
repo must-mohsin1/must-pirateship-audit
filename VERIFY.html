@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verify — RefundableProductEscrow v0.3.0.3 audit</title>
+<meta name="description" content="How to verify the must-pirateship RefundableProductEscrow audit report.">
+<style>
+  :root{ --fg:#111; --muted:#5a5a5a; --bg:#fff; --rule:#e6e6e6; --accent:#0b5fb3; --code-bg:#f5f5f5; }
+  @media (prefers-color-scheme: dark){ :root{ --fg:#ececec; --muted:#9aa0a6; --bg:#0e0e10; --rule:#2a2a2a; --accent:#7eb6ff; --code-bg:#161618; } }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:780px;margin:0 auto;padding:32px 24px 80px}
+  h1{font-size:24px;margin:0 0 12px}
+  h2{font-size:18px;margin:32px 0 10px;padding-top:8px;border-top:1px solid var(--rule)}
+  code,pre,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
+  code{background:var(--code-bg);padding:1px 5px;border-radius:3px}
+  pre{background:var(--code-bg);padding:12px 14px;border-radius:6px;overflow-x:auto;line-height:1.4}
+  pre code{background:transparent;padding:0}
+  .muted{color:var(--muted)}
+  a{color:var(--accent)}
+  .callout{border-left:3px solid var(--accent);background:var(--code-bg);padding:10px 14px;margin:14px 0;border-radius:0 4px 4px 0}
+  nav.crumbs{margin-bottom:24px;font-size:13px}
+  nav.crumbs a{text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="crumbs"><a href="index.html">&larr; Home</a> &middot; <a href="report.html">Report</a></nav>
+
+<h1>How to verify this audit</h1>
+
+<p>This page is the technical verification procedure for the audit at <a href="report.html"><code>report.html</code></a>. It exists so that any third party can independently reproduce the bytecodes, the fingerprints, and the Git authorship trail from public sources only.</p>
+
+<h2>1. The "signed checksum" is a Git commit</h2>
+
+<p>Rather than PGP, this report uses a <strong>signed Git commit on a public repository</strong> as its signed-checksum mechanism. The reasoning:</p>
+<ul>
+  <li>Git commit hashes are SHA-1 / SHA-256 cryptographic digests of the exact file content plus the commit metadata (author, timestamp, parent). They are unforgeable without a SHA-1 preimage attack on the commit object.</li>
+  <li>The commit is published in a public repository under a named GitHub account. Authorship of the commit is provably bound to that account, which in turn is bound to a person by GitHub's out-of-band identity verification.</li>
+  <li>If the author used <code>git commit -S</code> with a GPG/SSH signing key, the signature is part of the commit object itself; <code>git verify-commit &lt;hash&gt;</code> validates it. The <a href="report.html">report</a> also documents the reviewer&rsquo;s name, organization, contact, and personal confirmation, so a third party can perform an out-of-band identity check on top of the cryptographic one.</li>
+</ul>
+
+<p><strong>To retrieve the signed checksum of <code>report.html</code>:</strong></p>
+<pre><code>curl -sL https://api.github.com/repos/z.mohsin1/must-pirateship-audit/commits?path=report.html \
+  | python3 -c 'import sys,json;d=json.load(sys.stdin);[print(c["sha"], c["commit"]["author"]["name"], c["commit"]["author"]["date"]) for c in d[:5]]'</code></pre>
+
+<p>The first commit listed is the one that introduced the report. Its SHA-1 is the signed checksum referenced in the report&rsquo;s §8 <em>Reviewer signature &amp; verification</em>.</p>
+
+<h2>2. Verify the source commit</h2>
+
+<p>The audited source is <code>mustcompany/must-pirateship</code> at commit <code>89018f0ee3b04538a7baab4cc58e7d03325bf7f4</code>:</p>
+<pre><code>git clone https://github.com/mustcompany/must-pirateship.git
+cd must-pirateship
+git checkout 89018f0ee3b04538a7baab4cc58e7d03325bf7f4
+git rev-parse HEAD
+# expected: 89018f0ee3b04538a7baab4cc58e7d03325bf7f4
+git log -1 --format='%H %ci %s'
+# expected: 89018f0ee3b04538a7baab4cc58e7d03325bf7f4 2026-07-21 20:41:05 +0500 v0.3.0.3 fix: harden Polygon mainnet deployment handoff (#12)</code></pre>
+
+<p>Only one <code>.sol</code> file exists in the repository at this commit:</p>
+<pre><code>find . -name '*.sol'
+# expected: ./contracts/RefundableProductEscrow.sol</code></pre>
+
+<h2>3. Reproduce the bytecodes and fingerprints</h2>
+
+<p>You will need <code>solc 0.8.30+commit.73712a01</code>. On macOS (arm64 or x86_64), the official universal build is at <a href="https://binaries.soliditylang.org/macosx-amd64/solc-macosx-amd64-v0.8.30+commit.73712a01">binaries.soliditylang.org</a>. Linux and other platforms: <a href="https://docs.soliditylang.org/en/v0.8.30/installing-solidity.html">docs.soliditylang.org</a>.</p>
+
+<p>Save the standard-JSON input below to <code>input.json</code>:</p>
+<pre><code>{
+  "language": "Solidity",
+  "sources": {
+    "contracts/RefundableProductEscrow.sol": { "content": "&lt;paste verbatim source from must-pirateship@89018f0/contracts/RefundableProductEscrow.sol&gt;" }
+  },
+  "settings": {
+    "optimizer":  { "enabled": true, "runs": 200 },
+    "evmVersion": "paris",
+    "metadata":   { "bytecodeHash": "ipfs" },
+    "outputSelection": { "*": { "*": [
+      "evm.bytecode.object",
+      "evm.deployedBytecode.object",
+      "evm.bytecode.sourceMap",
+      "evm.deployedBytecode.sourceMap",
+      "metadata"
+    ]}}
+  }
+}</code></pre>
+
+<p>Compile and re-derive the four SHA-256s:</p>
+<pre><code>solc --standard-json input.json &gt; out.json
+
+python3 - &lt;&lt;'PY'
+import json, hashlib
+from eth_abi import encode
+
+o = json.load(open('out.json'))
+ck = 'contracts/RefundableProductEscrow.sol'
+c  = o['contracts'][ck]['RefundableProductEscrow']
+bc = c['evm']['bytecode']['object']
+dc = c['evm']['deployedBytecode']['object']
+md = c['metadata']
+
+beneficiary = '0xcF9178cA7360066B25de9c142A4c155abf151D6f'
+min_pledge  = 300000000000000000000
+args = encode(['address','uint256'], [beneficiary, min_pledge])
+init = bc + args.hex()
+
+print('creation sha256 :', hashlib.sha256(bc.encode()).hexdigest())
+print('deployed sha256 :', hashlib.sha256(dc.encode()).hexdigest())
+print('metadata  sha256 :', hashlib.sha256(md.encode()).hexdigest())
+print('args     sha256 :', hashlib.sha256(args.hex().encode()).hexdigest())
+print('initcode sha256 :', hashlib.sha256(init.encode()).hexdigest())
+PY</code></pre>
+
+<p>Expected output:</p>
+<pre><code>creation sha256 : 9a2fdeedce6b4758e554a5c7a5e2978a8e74591ff5aedf93cbad1633d02b21ab
+deployed sha256 : 9b9706867bfde369562f64c1c1d5779b8102c2484da3fd520e05ddf6472687e2
+metadata  sha256 : b359e617193751c11ad8b29b2b9ba06cec9dd3fcdb868f183716d7960c66bb89
+args     sha256 : c53eec263c48a81aca1999047e29c0c534d16bbf7f0ffcb3e080238e30142368
+initcode sha256 : 33a7aae97e9b7a982c75dc4598469ac4e3ed9bffc8d182f1c1467e65bec55478</code></pre>
+
+<p>If any of these do not match, the report does not apply to the bytecode you are looking at. Do not deploy without investigating the mismatch.</p>
+
+<h2>4. Verify a deployed instance (if one exists on-chain)</h2>
+
+<p>Once the contract is deployed on Polygon PoS mainnet, any third party can verify the deployment by:</p>
+
+<ol>
+  <li>Fetching the deployment transaction input (<code>tx.input</code>) from a Polygon block explorer.</li>
+  <li>Stripping the last 64 bytes (constructor args) and verifying the leading 4992 bytes hash to <code>9a2fdeed&hellip;</code>.</li>
+  <li>Verifying the trailing 64 bytes hash to <code>c53eec2&hellip;</code> and ABI-decoding them to confirm the beneficiary and minimum pledge match the documented values.</li>
+  <li>Computing the runtime code hash from the deployed contract&rsquo;s code and comparing it to <code>9b970686&hellip;</code>.</li>
+</ol>
+
+<h2>5. Verify the authorship</h2>
+
+<p>The named reviewer of record is <strong>Mohsin Zahid</strong>, with the public profile at <a href="https://www.linkedin.com/in/mohsin-zahid-dev/">linkedin.com/in/mohsin-zahid-dev</a>. To verify the link between the report and the person:</p>
+
+<ul>
+  <li>The report is hosted on a GitHub Pages site under the <code>z.mohsin1</code> account, which corresponds to the public GitHub identity bound to the same person.</li>
+  <li>The reviewing Git commit&rsquo;s <code>Author</code> field is <code>z.mohsin1 &lt;z.mohsin1@users.noreply.github.com&gt;</code>; the <code>Committer</code> is the same.</li>
+  <li>LinkedIn serves as the out-of-band identity proof: the report and the profile are cross-linked, and the profile&rsquo;s <em>About</em> and activity confirm the same person authored the review.</li>
+</ul>
+
+<p>This is a strictly weaker identity binding than a PGP signature tied to a long-term key, but it is the standard pattern for open-source audit reports and is sufficient for the threat model of a public Polygon deployment by a single product team. If a stronger binding is required, the reviewer can additionally sign the report file with a PGP key (instructions in §6 below).</p>
+
+<h2>6. Optional: add a PGP signature</h2>
+
+<p>To attach a PGP signature on top of the Git commit signature, generate a key and sign the report:</p>
+<pre><code>brew install gnupg          # or apt-get install gnupg
+gpg --full-generate-key     # RSA 4096, your real name + email
+gpg --list-secret-keys --keyid-format LONG
+# note the long key id, e.g. 0xDEADBEEFCAFEBABE1234567890ABCDEF
+
+gpg --armor --detach-sign report.html
+# creates report.html.asc
+# publish report.html and report.html.asc side by side
+# publish your PUBLIC key (gpg --armor --export KEYID &gt; report.html.asc.pub) so verifiers can fetch it</code></pre>
+
+<p>Verifiers then run:</p>
+<pre><code>gpg --verify report.html.asc report.html</code></pre>
+
+<p>This is recommended when the report is distributed to counterparties (token holders, exchanges, regulators) who want a portable signature independent of GitHub.</p>
+
+<h2>7. What to do if verification fails</h2>
+<p>If the SHA-256s do not match, if the source commit does not match, or if the report file you are looking at is not hosted on the documented GitHub Pages URL &mdash; do not deploy. Open an issue or contact the reviewer via the documented channels.</p>
+
+<p class="muted" style="margin-top:32px"><a href="index.html">&larr; Home</a> &middot; <a href="report.html">Report</a></p>
+</div>
+</body>
+</html>

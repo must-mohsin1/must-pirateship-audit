@@ -1,0 +1,12 @@
+# GitHub Pages
+
+This site is served via GitHub Pages on the `main` branch from `/`.
+
+To enable locally with `gh`:
+
+```
+gh repo edit --enable-pages --pages-source-branch main --pages-source-path /
+```
+
+To enable in the browser: Settings &rarr; Pages &rarr; Build and deployment &rarr; Source:
+"Deploy from a branch" &rarr; Branch: `main` &rarr; Folder: `/`.
