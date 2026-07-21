@@ -5,7 +5,7 @@ in `mustcompany/must-pirateship` at commit `89018f0ee3b04538a7baab4cc58e7d03325b
 
 ## Published URL
 
-https://z.mohsin1.github.io/must-pirateship-audit/
+https://must-mohsin1.github.io/must-pirateship-audit/
 
 ## Contents
 

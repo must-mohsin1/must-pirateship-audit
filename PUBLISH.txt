@@ -27,7 +27,7 @@ git commit -m "audit: publish RefundableProductEscrow v0.3.0.3 review"
 gh repo create must-pirateship-audit --public --source=. --remote=origin --push
 ```
 
-After this command, the site is at `https://github.com/z.mohsin1/must-pirateship-audit`.
+After this command, the site is at `https://github.com/must-mohsin1/must-pirateship-audit`.
 
 ## 3. (Optional but recommended) Sign the commit
 
@@ -54,7 +54,7 @@ gh repo edit --enable-pages --pages-source-branch main --pages-source-path /
 
 Give Pages 30-60 seconds to publish. The site will be available at:
 
-  https://z.mohsin1.github.io/must-pirateship-audit/
+  https://must-mohsin1.github.io/must-pirateship-audit/
 
 ## 5. Fill in the signed-checksum in `report.html`
 
@@ -93,7 +93,7 @@ git rev-parse HEAD
 # (see VERIFY.html for the full solc + python reproduction)
 
 # Fetch the report and check authorship
-curl -sL https://z.mohsin1.github.io/must-pirateship-audit/report.html | head
+curl -sL https://must-mohsin1.github.io/must-pirateship-audit/report.html | head
 gh api repos/z.mohsin1/must-pirateship-audit/commits?path=report.html --jq '.[0].sha'
 ```
 
